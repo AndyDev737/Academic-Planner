@@ -25,15 +25,6 @@ Diseñado específicamente para la comunidad estudiantil (UC \- Facultad de Inge
 | **html2canvas** | Renderizado y exportación de la cuadrícula del horario a formato de imagen. |
 | **Google Fonts** | Tipografía *Inter* seleccionada para máxima legibilidad profesional. |
 
-## **🚀 Instalación y Uso Local**
-
-Al ser una aplicación **Client-Side**, no requiere servidores ni configuraciones complejas de bases de datos.
-
-1. **Clona el repositorio** o descarga el código fuente:  
-   git clone \[https://github.com/andydev737/Academic-Planner.git\](https://github.com/andydev737/Academic-Planner.git)
-
-2. **Ejecuta el archivo:** Abre horario\_academico.html (o index.html) directamente en cualquier navegador moderno (Chrome, Firefox, Edge, etc.).
-
 ## **📖 Guía de Uso Rápido**
 
 1. **Añadir Contenido:** Haz clic en el botón **"Añadir Materia"**.  
