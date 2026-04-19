@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academic Planner</title>
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
+        body {
+            font-family: 'Inter', sans-serif;
             background-color: #f1f5f9;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-        
+
         .grid-schedule {
             display: grid;
             grid-template-columns: 80px repeat(7, 1fr);
@@ -49,7 +49,7 @@
         }
 
         .time-cell {
-            background: #334155; 
+            background: #334155;
             color: white;
             font-size: 0.7rem;
             display: flex;
@@ -64,8 +64,8 @@
             padding: 8px 6px;
             border-radius: 8px;
             margin: 2px 0;
-            border-left: 4px solid rgba(0,0,0,0.15);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-left: 4px solid rgba(0, 0, 0, 0.15);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             animation: fadeIn 0.3s ease;
             word-wrap: break-word;
             display: flex;
@@ -76,7 +76,17 @@
             min-height: 75px;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(2px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         .conflict {
             border: 2px solid #ef4444 !important;
@@ -104,8 +114,15 @@
             color: #94a3b8;
         }
 
-        .action-btn:hover { transform: scale(1.05); }
-        .btn-delete:hover { background-color: #fee2e2; color: #ef4444; border-color: #fecaca; }
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-delete:hover {
+            background-color: #fee2e2;
+            color: #ef4444;
+            border-color: #fecaca;
+        }
 
         input[type="color"] {
             padding: 0;
@@ -116,9 +133,21 @@
             position: absolute;
         }
 
-        #subjectsList::-webkit-scrollbar { width: 6px; }
-        #subjectsList::-webkit-scrollbar-track { background: transparent; }
-        #subjectsList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        #subjectsList::-webkit-scrollbar,
+        .modal-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #subjectsList::-webkit-scrollbar-track,
+        .modal-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #subjectsList::-webkit-scrollbar-thumb,
+        .modal-scroll::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
 
         .github-badge {
             display: inline-flex;
@@ -132,7 +161,11 @@
             text-decoration: none;
             transition: background-color 0.2s;
         }
-        .github-badge:hover { background-color: #444d56; }
+
+        .github-badge:hover {
+            background-color: #444d56;
+        }
+
         .github-badge .version {
             background-color: #0366d6;
             padding: 2px 6px;
@@ -140,67 +173,123 @@
             margin-left: 6px;
         }
 
-        /* Helper for the custom color circles in nav */
         .nav-color-dot {
             width: 20px;
             height: 20px;
             border-radius: 9999px;
             border: 1px solid #cbd5e1;
             cursor: pointer;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 10px;
             font-weight: 900;
         }
+
+        .help-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .help-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .help-media-container {
+            aspect-ratio: 16/9;
+            background: #e2e8f0;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-media-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
+
 <body class="p-4 md:p-6">
 
     <div class="max-w-[1600px] mx-auto flex-grow">
-        <nav class="mb-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4 glass-panel p-6 rounded-2xl shadow-sm border border-slate-200">
+        <nav
+            class="mb-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4 glass-panel p-6 rounded-2xl shadow-sm border border-slate-200">
             <div>
-                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Academic <span class="text-blue-600">Planner</span></h1>
-                <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Gestor de Horarios Universitario</p>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Academic <span
+                        class="text-blue-600">Planner</span></h1>
+                <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Gestor de Horarios Universitario
+                </p>
             </div>
-            
-            <div class="flex flex-wrap gap-4 items-center">
+
+            <div class="flex flex-wrap gap-4 items-center mt-4 xl:mt-0">
                 <div class="flex gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
-                    <!-- Configuración Global de Colores -->
                     <div class="flex flex-col items-center px-3 border-r border-slate-100">
                         <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Fondo</span>
-                        <div class="nav-color-dot" id="gridColorPreview" onclick="document.getElementById('gridColorInput').click()" style="background-color: #ffffff;"></div>
+                        <div class="nav-color-dot" id="gridColorPreview"
+                            onclick="document.getElementById('gridColorInput').click()"
+                            style="background-color: #ffffff;"></div>
                         <input type="color" id="gridColorInput" value="#ffffff" oninput="updateGridColor(this.value)">
                     </div>
 
                     <div class="flex flex-col items-center px-3 border-r border-slate-100">
                         <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Días</span>
                         <div class="flex gap-1.5">
-                            <div class="nav-color-dot" id="headerBgColorPreview" onclick="document.getElementById('headerBgInput').click()" style="background-color: #1e293b;" title="Fondo"></div>
-                            <div class="nav-color-dot bg-white text-slate-800" id="headerTextColorPreview" onclick="document.getElementById('headerTextInput').click()" title="Texto">A</div>
+                            <div class="nav-color-dot" id="headerBgColorPreview"
+                                onclick="document.getElementById('headerBgInput').click()"
+                                style="background-color: #1e293b;" title="Fondo"></div>
+                            <div class="nav-color-dot bg-white text-slate-800" id="headerTextColorPreview"
+                                onclick="document.getElementById('headerTextInput').click()" title="Texto">A</div>
                         </div>
-                        <input type="color" id="headerBgInput" value="#1e293b" oninput="updateHeaderStyles('bg', this.value)">
-                        <input type="color" id="headerTextInput" value="#ffffff" oninput="updateHeaderStyles('text', this.value)">
+                        <input type="color" id="headerBgInput" value="#1e293b"
+                            oninput="updateHeaderStyles('bg', this.value)">
+                        <input type="color" id="headerTextInput" value="#ffffff"
+                            oninput="updateHeaderStyles('text', this.value)">
                     </div>
 
                     <div class="flex flex-col items-center px-3">
                         <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Horas</span>
                         <div class="flex gap-1.5">
-                            <div class="nav-color-dot" id="timeBgColorPreview" onclick="document.getElementById('timeBgInput').click()" style="background-color: #334155;" title="Fondo"></div>
-                            <div class="nav-color-dot bg-white text-slate-800" id="timeTextColorPreview" onclick="document.getElementById('timeTextInput').click()" title="Texto">A</div>
+                            <div class="nav-color-dot" id="timeBgColorPreview"
+                                onclick="document.getElementById('timeBgInput').click()"
+                                style="background-color: #334155;" title="Fondo"></div>
+                            <div class="nav-color-dot bg-white text-slate-800" id="timeTextColorPreview"
+                                onclick="document.getElementById('timeTextInput').click()" title="Texto">A</div>
                         </div>
-                        <input type="color" id="timeBgInput" value="#334155" oninput="updateTimeStyles('bg', this.value)">
-                        <input type="color" id="timeTextInput" value="#ffffff" oninput="updateTimeStyles('text', this.value)">
+                        <input type="color" id="timeBgInput" value="#334155"
+                            oninput="updateTimeStyles('bg', this.value)">
+                        <input type="color" id="timeTextInput" value="#ffffff"
+                            oninput="updateTimeStyles('text', this.value)">
                     </div>
                 </div>
 
-                <div class="flex gap-2">
-                    <button id="downloadBtn" onclick="downloadSchedule()" class="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-700 text-sm font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all shadow-sm">
+                <div class="flex items-center gap-3">
+                    <button id="downloadBtn" onclick="downloadSchedule()"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-700 text-sm font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all shadow-sm">
                         Exportar PNG
                     </button>
-                    <button onclick="toggleModal(true)" class="flex items-center gap-2 px-5 py-2.5 bg-slate-800 text-white text-sm font-bold rounded-xl hover:bg-slate-900 transition-all shadow-lg shadow-slate-200">
+                    <button onclick="toggleModal(true)"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-slate-800 text-white text-sm font-bold rounded-xl hover:bg-slate-900 transition-all shadow-lg shadow-slate-200">
                         Añadir Materia
+                    </button>
+                    <button onclick="toggleHelpModal(true)" class="flex flex-col items-center group ml-1">
+                        <div
+                            class="w-8 h-8 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center border border-blue-100 shadow-sm group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <span class="font-bold text-lg leading-none">?</span>
+                        </div>
+                        <span class="text-[9px] font-black uppercase tracking-tighter text-blue-500 mt-1">Ayuda</span>
                     </button>
                 </div>
             </div>
@@ -228,28 +317,113 @@
         </div>
     </div>
 
-    <!-- Footer de GitHub -->
     <footer class="mt-12 py-8 border-t border-slate-200 flex flex-col items-center gap-4 text-slate-400">
-        <a href="https://github.com/AndyDev737/Academic-Planner" target="_blank" class="github-badge">
-            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        <a href="https://github.com/tu-usuario/tu-repositorio" target="_blank" class="github-badge">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
             GitHub Repository
-            <span class="version">v1.0</span>
+            <span class="version">v1.1</span>
         </a>
-        <p class="text-[10px] font-medium uppercase tracking-widest">Desarrollado para la comunidad ucista de ingeniería</p>
+        <p class="text-[10px] font-medium uppercase tracking-widest">Desarrollado para la comunidad ucista de Ingeniería
+        </p>
     </footer>
 
-    <!-- Modal para añadir materias -->
-    <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="helpModal"
+        class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white w-full max-w-4xl max-h-[90vh] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-slate-100">
+            <div class="p-6 md:p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50 shrink-0">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl md:text-2xl font-black shrink-0">
+                        ?</div>
+                    <div>
+                        <h3 class="font-black text-slate-800 text-lg md:text-xl">Guía de Usuario</h3>
+                    </div>
+                </div>
+                <button onclick="toggleHelpModal(false)"
+                    class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-all text-2xl shadow-sm">&times;</button>
+            </div>
+
+            <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 overflow-y-auto modal-scroll grow bg-white">
+                <div class="help-card">
+                    <div class="help-media-container">
+                        <video autoplay loop muted playsinline oncontextmenu="return false;">
+                            <source src="tutorial_1.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="flex gap-3">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
+                        <p class="text-slate-600 text-sm leading-relaxed">Carga tus materias pegando el texto de la
+                            oferta académica en el botón "Añadir Materia".</p>
+                    </div>
+                </div>
+                <div class="help-card">
+                    <div class="help-media-container">
+                        <video autoplay loop muted playsinline oncontextmenu="return false;">
+                            <source src="tutorial_2.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="flex gap-3">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
+                        <p class="text-slate-600 text-sm leading-relaxed">Personaliza los colores de cada bloque y de
+                            las etiquetas de la cuadrícula desde la barra superior.</p>
+                    </div>
+                </div>
+                <div class="help-card">
+                    <div class="help-media-container">
+                        <video autoplay loop muted playsinline oncontextmenu="return false;">
+                            <source src="tutorial_3.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="flex gap-3">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
+                        <p class="text-slate-600 text-sm leading-relaxed">Detecta conflictos: las celdas con más de una
+                            materia se resaltarán automáticamente en color rojo.</p>
+                    </div>
+                </div>
+                <div class="help-card">
+                    <div class="help-media-container">
+                        <img src="tutorial_4.png" alt="Tutorial paso 4" oncontextmenu="return false;"
+                            class="w-full block">
+                    </div>
+                    <div class="flex gap-3">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">4</span>
+                        <p class="text-slate-600 text-sm leading-relaxed">Descarga tu planificación final haciendo clic
+                            en "Exportar PNG" para guardarla en tu dispositivo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 bg-slate-50/50 text-center border-t border-slate-100 shrink-0">
+                <button onclick="toggleHelpModal(false)"
+                    class="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition-all shadow-lg">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addModal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center">
                 <h3 class="font-bold text-slate-800">Importar Materias</h3>
-                <button onclick="toggleModal(false)" class="text-slate-400 hover:text-slate-600 text-xl">&times;</button>
+                <button onclick="toggleModal(false)"
+                    class="text-slate-400 hover:text-slate-600 text-xl">&times;</button>
             </div>
             <div class="p-6">
-                <textarea id="modalInput" class="w-full h-48 p-4 text-xs font-mono border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none mb-4" placeholder="Ejemplo:
-MAT101 Cálculo I 01 PROF. Juan Perez
-LU0800 A101 MA0850 B202"></textarea>
-                <button onclick="addNewSubject()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold">Guardar en Inventario</button>
+                <textarea id="modalInput"
+                    class="w-full h-48 p-4 text-xs font-mono border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none mb-4"
+                    placeholder="Ejemplo:
+CR7M10 FUNDAMENTOS DE PROGRAMACIÓN 03  PROF. LOVELACE ADA K
+LU1120 LC3  LU1210 LC3  VI1120 LC3  VI1210 LC3"></textarea>
+                <button onclick="addNewSubject()"
+                    class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold">Guardar en Inventario</button>
             </div>
         </div>
     </div>
@@ -258,8 +432,8 @@ LU0800 A101 MA0850 B202"></textarea>
         const DAYS = ['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'];
         const FULL_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
         const HOURS = ['0800', '0850', '0940', '1030', '1120', '1210', '1300', '1350', '1440', '1530', '1620', '1710', '1800', '1850'];
-        
-        let inventory = {}; 
+
+        let inventory = {};
         let gridBgColor = "#ffffff";
         let headerBgColor = "#1e293b";
         let headerTextColor = "#ffffff";
@@ -275,6 +449,10 @@ LU0800 A101 MA0850 B202"></textarea>
 
         function toggleModal(show) {
             document.getElementById('addModal').classList.toggle('hidden', !show);
+        }
+
+        function toggleHelpModal(show) {
+            document.getElementById('helpModal').classList.toggle('hidden', !show);
         }
 
         function updateGridColor(val) {
@@ -352,8 +530,8 @@ LU0800 A101 MA0850 B202"></textarea>
                     };
                 }
                 if (!inventory[data.code].sections.some(s => s.info === data.info)) {
-                    inventory[data.code].sections.push({ 
-                        info: data.info, 
+                    inventory[data.code].sections.push({
+                        info: data.info,
                         sessions: data.sessions,
                         sectionNumber: data.section,
                         professorName: data.professor
@@ -389,35 +567,38 @@ LU0800 A101 MA0850 B202"></textarea>
             const container = document.getElementById('subjectsList');
             const keys = Object.keys(inventory);
             if (keys.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs italic">Vacío</div>`;
+                container.innerHTML = `<div class="text-center py-12 text-slate-300 text-[10px] font-bold uppercase tracking-widest">Sin materias</div>`;
                 return;
             }
 
             container.innerHTML = keys.map(code => {
                 const sub = inventory[code];
                 return `
-                    <div class="p-4 border rounded-xl transition-all ${sub.active ? 'border-blue-100 bg-white shadow-sm' : 'opacity-50 bg-slate-50'}">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" ${sub.active ? 'checked' : ''} onchange="inventory['${code}'].active = !inventory['${code}'].active; updateUI()" class="w-4 h-4 rounded text-blue-600 cursor-pointer">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white bg-slate-800">${code}</span>
+                    <div class="p-4 border-2 rounded-2xl transition-all ${sub.active ? 'border-blue-50 bg-white shadow-sm' : 'opacity-40 grayscale border-slate-100 bg-slate-50'}">
+                        <div class="flex items-center justify-between gap-1 mb-3">
+                            <div class="flex items-center gap-2 shrink-0">
+                                <div class="relative w-5 h-5 flex items-center justify-center shrink-0">
+                                    <input type="checkbox" ${sub.active ? 'checked' : ''} onchange="inventory['${code}'].active = !inventory['${code}'].active; updateUI()" class="absolute inset-0 m-0 w-full h-full rounded-md border-2 border-slate-300 text-blue-600 focus:ring-0 cursor-pointer appearance-none checked:bg-blue-600 checked:border-blue-600 transition-all peer">
+                                    <svg class="w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 relative z-10 transition-opacity" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                                </div>
+                                <span class="px-2 py-1 rounded-md text-[10px] font-black text-white bg-slate-800 tracking-wider shrink-0">${code}</span>
                             </div>
-                            <div class="flex gap-1">
-                                <button onclick="document.getElementById('color-${code}').click()" class="action-btn"><div class="w-3 h-3 rounded-full border" style="background-color: ${sub.color}"></div></button>
-                                <input type="color" id="color-${code}" value="#ffffff" oninput="updateSubjectColor('${code}', this.value)" onchange="updateUI()">
-                                <button onclick="document.getElementById('text-color-${code}').click()" class="action-btn"><span class="font-black text-[10px]" style="color: ${sub.textColor}">A</span></button>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button onclick="document.getElementById('color-${code}').click()" class="action-btn shadow-sm"><div class="w-3 h-3 rounded-full" style="background-color: ${sub.color}"></div></button>
+                                <input type="color" id="color-${code}" value="${sub.color}" oninput="updateSubjectColor('${code}', this.value)" onchange="updateUI()">
+                                <button onclick="document.getElementById('text-color-${code}').click()" class="action-btn shadow-sm"><span class="font-black text-[10px]" style="color: ${sub.textColor}">A</span></button>
                                 <input type="color" id="text-color-${code}" value="${sub.textColor}" oninput="updateSubjectTextColor('${code}', this.value)" onchange="updateUI()">
-                                <button onclick="delete inventory['${code}']; updateUI()" class="action-btn btn-delete"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                                <button onclick="delete inventory['${code}']; updateUI()" class="action-btn btn-delete shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
                             </div>
                         </div>
-                        <div class="pl-7 mb-3">
-                            <div class="text-[11px] font-bold text-slate-700 leading-tight break-words uppercase">${sub.name}</div>
+                        <div class="mb-3">
+                            <div class="text-[11px] font-black text-slate-700 leading-tight uppercase tracking-tight break-words">${sub.name}</div>
                         </div>
-                        <div class="pl-7">
-                            <select onchange="inventory['${code}'].selectedSectionIndex = this.value; updateUI()" class="w-full text-[10px] p-2 rounded-lg border border-slate-200 bg-slate-50 truncate">
-                                ${sub.sections.map((sec, i) => `<option value="${i}" ${sub.selectedSectionIndex == i ? 'selected' : ''}>${sec.info}</option>`).join('')}
-                            </select>
-                        </div>
+                        <select onchange="inventory['${code}'].selectedSectionIndex = this.value; updateUI()" class="w-full text-[10px] font-bold p-2.5 rounded-xl border-2 border-slate-50 bg-slate-50/80 text-slate-600 focus:border-blue-200 focus:outline-none transition-all truncate">
+                            ${sub.sections.map((sec, i) => `<option value="${i}" ${sub.selectedSectionIndex == i ? 'selected' : ''}>${sec.info}</option>`).join('')}
+                        </select>
                     </div>
                 `;
             }).join('');
@@ -427,23 +608,23 @@ LU0800 A101 MA0850 B202"></textarea>
             const grid = document.getElementById('scheduleGrid');
             grid.innerHTML = '';
             grid.style.backgroundColor = gridBgColor;
-            
-            const corner = document.createElement('div'); 
-            corner.className = 'header-cell'; corner.innerText = 'HORA'; 
+
+            const corner = document.createElement('div');
+            corner.className = 'header-cell'; corner.innerText = 'HORA';
             corner.style.backgroundColor = headerBgColor; corner.style.color = headerTextColor;
             grid.appendChild(corner);
 
-            FULL_DAYS.forEach(d => { 
-                const h = document.createElement('div'); 
-                h.className = 'header-cell'; h.innerText = d; 
+            FULL_DAYS.forEach(d => {
+                const h = document.createElement('div');
+                h.className = 'header-cell'; h.innerText = d;
                 h.style.backgroundColor = headerBgColor; h.style.color = headerTextColor;
-                grid.appendChild(h); 
+                grid.appendChild(h);
             });
 
             const cellMap = {};
             HOURS.forEach(hour => {
-                const label = document.createElement('div'); 
-                label.className = 'cell time-cell border-r border-slate-100'; label.innerText = hour; 
+                const label = document.createElement('div');
+                label.className = 'cell time-cell border-r border-slate-100'; label.innerText = hour;
                 label.style.backgroundColor = timeBgColor; label.style.color = timeTextColor;
                 grid.appendChild(label);
 
@@ -483,4 +664,5 @@ LU0800 A101 MA0850 B202"></textarea>
         window.onload = updateUI;
     </script>
 </body>
+
 </html>
