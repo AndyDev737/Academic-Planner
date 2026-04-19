@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Planner Pro v1.0</title>
+    <title>Academic Planner</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -11,7 +13,7 @@
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #f1f5f9;
-            min-height: 100-vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -137,6 +139,21 @@
             border-radius: 4px;
             margin-left: 6px;
         }
+
+        /* Helper for the custom color circles in nav */
+        .nav-color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 9999px;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 900;
+        }
     </style>
 </head>
 <body class="p-4 md:p-6">
@@ -151,20 +168,30 @@
             <div class="flex flex-wrap gap-4 items-center">
                 <div class="flex gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
                     <!-- Configuración Global de Colores -->
-                    <div class="flex flex-col items-center px-2 border-r border-slate-100">
+                    <div class="flex flex-col items-center px-3 border-r border-slate-100">
                         <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Fondo</span>
-                        <div class="w-5 h-5 rounded-full border border-slate-300 cursor-pointer shadow-inner" id="gridColorPreview" onclick="document.getElementById('gridColorInput').click()" style="background-color: #ffffff;"></div>
+                        <div class="nav-color-dot" id="gridColorPreview" onclick="document.getElementById('gridColorInput').click()" style="background-color: #ffffff;"></div>
                         <input type="color" id="gridColorInput" value="#ffffff" oninput="updateGridColor(this.value)">
                     </div>
-                    <div class="flex flex-col items-center px-2 border-r border-slate-100">
-                        <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Días (BG)</span>
-                        <div class="w-5 h-5 rounded-full border border-slate-300 cursor-pointer shadow-inner" id="headerBgColorPreview" onclick="document.getElementById('headerBgInput').click()" style="background-color: #1e293b;"></div>
+
+                    <div class="flex flex-col items-center px-3 border-r border-slate-100">
+                        <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Días</span>
+                        <div class="flex gap-1.5">
+                            <div class="nav-color-dot" id="headerBgColorPreview" onclick="document.getElementById('headerBgInput').click()" style="background-color: #1e293b;" title="Fondo"></div>
+                            <div class="nav-color-dot bg-white text-slate-800" id="headerTextColorPreview" onclick="document.getElementById('headerTextInput').click()" title="Texto">A</div>
+                        </div>
                         <input type="color" id="headerBgInput" value="#1e293b" oninput="updateHeaderStyles('bg', this.value)">
+                        <input type="color" id="headerTextInput" value="#ffffff" oninput="updateHeaderStyles('text', this.value)">
                     </div>
-                    <div class="flex flex-col items-center px-2">
-                        <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Horas (BG)</span>
-                        <div class="w-5 h-5 rounded-full border border-slate-300 cursor-pointer shadow-inner" id="timeBgColorPreview" onclick="document.getElementById('timeBgInput').click()" style="background-color: #334155;"></div>
+
+                    <div class="flex flex-col items-center px-3">
+                        <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Horas</span>
+                        <div class="flex gap-1.5">
+                            <div class="nav-color-dot" id="timeBgColorPreview" onclick="document.getElementById('timeBgInput').click()" style="background-color: #334155;" title="Fondo"></div>
+                            <div class="nav-color-dot bg-white text-slate-800" id="timeTextColorPreview" onclick="document.getElementById('timeTextInput').click()" title="Texto">A</div>
+                        </div>
                         <input type="color" id="timeBgInput" value="#334155" oninput="updateTimeStyles('bg', this.value)">
+                        <input type="color" id="timeTextInput" value="#ffffff" oninput="updateTimeStyles('text', this.value)">
                     </div>
                 </div>
 
@@ -257,14 +284,24 @@ LU0800 A101 MA0850 B202"></textarea>
         }
 
         function updateHeaderStyles(type, val) {
-            if (type === 'bg') headerBgColor = val;
-            else headerTextColor = val;
+            if (type === 'bg') {
+                headerBgColor = val;
+                document.getElementById('headerBgColorPreview').style.backgroundColor = val;
+            } else {
+                headerTextColor = val;
+                document.getElementById('headerTextColorPreview').style.color = val;
+            }
             renderSchedule();
         }
 
         function updateTimeStyles(type, val) {
-            if (type === 'bg') timeBgColor = val;
-            else timeTextColor = val;
+            if (type === 'bg') {
+                timeBgColor = val;
+                document.getElementById('timeBgColorPreview').style.backgroundColor = val;
+            } else {
+                timeTextColor = val;
+                document.getElementById('timeTextColorPreview').style.color = val;
+            }
             renderSchedule();
         }
 
