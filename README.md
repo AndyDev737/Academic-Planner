@@ -1,29 +1,57 @@
-📅 Planificador de Horarios - Ingeniería UC
+📅 Academic Planner - Gestor de Horarios Dinámico
 
-¡Hola, futuro colega! Esta es una herramienta web diseñada específicamente para los estudiantes de la Facultad de Ingeniería de la Universidad de Carabobo. Olvídate de pelear con hojas de cálculo o dibujos a mano durante el proceso de inscripción.
+Academic Planner es una herramienta web interactiva diseñada específicamente para estudiantes universitarios (especialmente de la comunidad ucista de Ingeniería) que necesitan organizar sus horarios de manera visual, rápida y eficiente.
 
-🚀 ¿Qué hace esta herramienta?
+🚀 [Ver Aplicación en Vivo](https://andydev737.github.io/Academic-Planner/)
 
-Este planificador te permite visualizar de forma dinámica tu carga académica del semestre. Solo necesitas copiar los datos de las materias (tal cual aparecen en el listado de ofertas) y la app se encarga del resto.
+✨ Características Principales
 
-✨ Características principales:
+📥 Importación Inteligente: Pega directamente el texto de la oferta académica y la aplicación procesará automáticamente los códigos, nombres de materias, secciones y horarios. (Una o más materias a la vez)
 
-Importación Inteligente: Detecta automáticamente código, nombre, sección, profesor y horarios (LU0800, MA1030, etc.).
+🎨 Personalización Total: Cambia el color de fondo de la cuadrícula, los encabezados y cada materia de forma individual para una mejor distinción visual.
 
-Gestión de Conflictos: Si dos materias chocan, la celda se marcará en rojo para avisarte del solapamiento.
+⚠️ Detección de Conflictos: El sistema resalta automáticamente en rojo las celdas donde se cruzan dos o más materias.
 
-Personalización Total: Cambia colores de fondo y texto de cada materia para organizar tu semana por áreas o prioridades.
+📱 Interfaz Adaptativa: Diseño moderno y responsive que funciona tanto en escritorio como en dispositivos móviles.
 
-Exportación en un Click: Descarga tu horario final como una imagen (PNG) de alta resolución, lista para llevar en el celular.
+📸 Exportación a Imagen: Descarga tu horario final en formato PNG de alta calidad con un solo clic.
 
-Privacidad: No necesitas cuenta ni base de datos. Todo se procesa localmente en tu navegador.
+🎥 Guía de Ayuda Integrada: Tutoriales en video integrados para aprender a usar la herramienta en segundos.
 
-🛠️ Uso rápido
+🛠️ Tecnologías Utilizadas
 
-Copia el bloque de texto de la materia desde la oferta académica.
+HTML5 & CSS3: Estructura semántica.
 
-Haz clic en "Añadir Materia" y pega el texto.
+Tailwind CSS: Estilizado moderno y responsivo.
 
-¡Listo! Ajusta los colores a tu gusto y exporta tu planificación.
+JavaScript (Vanilla): Lógica de procesamiento de datos y manipulación del DOM.
 
-Desarrollado para optimizar el proceso de inscripción y organización de los estudiantes de la UC. ¡Mucho éxito en el semestre! 🛠️⚙️
+html2canvas: Para la generación de capturas de pantalla del horario.
+
+Google Fonts (Inter): Tipografía legible y profesional.
+
+🚀 Instalación y Uso Local
+
+No requiere de servidores ni bases de datos complejas. Al ser una aplicación del lado del cliente, puedes ejecutarla simplemente abriendo el archivo HTML.
+
+📖 Cómo usarlo
+
+Haz clic en "Añadir Materia".
+
+Pega el bloque de texto de tu oferta. Ejemplo:
+
+CR7M10 FUNDAMENTOS DE PROGRAMACIÓN 03  PROF. LOVELACE ADA K
+LU1120 LC3  LU1210 LC3  VI1120 LC3  VI1210 LC3
+
+Selecciona la sección deseada en el inventario lateral.
+
+Ajusta los colores a tu gusto.
+
+Haz clic en "Exportar PNG" para guardar tu horario.
+
+
+📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Siéntete libre de usarlo y mejorarlo.
+
+Desarrollado para la comunidad de Ingeniería.
