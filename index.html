@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Planner Pro v1.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f1f5f9;
+            min-height: 100-vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .grid-schedule {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cell {
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            min-height: 90px;
+            padding: 4px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .header-cell {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            font-weight: 600;
+            padding: 10px 0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .time-cell {
+            background: #334155; 
+            color: white;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .course-badge {
+            font-size: 0.65rem;
+            padding: 8px 6px;
+            border-radius: 8px;
+            margin: 2px 0;
+            border-left: 4px solid rgba(0,0,0,0.15);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            animation: fadeIn 0.3s ease;
+            word-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 75px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+
+        .conflict {
+            border: 2px solid #ef4444 !important;
+            background-color: rgba(254, 242, 242, 0.9) !important;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn {
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            color: #94a3b8;
+        }
+
+        .action-btn:hover { transform: scale(1.05); }
+        .btn-delete:hover { background-color: #fee2e2; color: #ef4444; border-color: #fecaca; }
+
+        input[type="color"] {
+            padding: 0;
+            border: none;
+            width: 0;
+            height: 0;
+            visibility: hidden;
+            position: absolute;
+        }
+
+        #subjectsList::-webkit-scrollbar { width: 6px; }
+        #subjectsList::-webkit-scrollbar-track { background: transparent; }
+        #subjectsList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        .github-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #24292e;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .github-badge:hover { background-color: #444d56; }
+        .github-badge .version {
+            background-color: #0366d6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6">
+
+    <div class="max-w-[1600px] mx-auto flex-grow">
+        <nav class="mb-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4 glass-panel p-6 rounded-2xl shadow-sm border border-slate-200">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Academic <span class="text-blue-600">Planner</span></h1>
+                <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Gestor de Horarios Universitario</p>
+            </div>
+            
+            <div class="flex flex-wrap gap-4 items-center">
+                <div class="flex gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+                    <!-- Configuración Global de Colores -->
+                    <div class="flex flex-col items-center px-2 border-r border-slate-100">
+                        <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Fondo</span>
+                        <div class="w-5 h-5 rounded-full border border-slate-300 cursor-pointer shadow-inner" id="gridColorPreview" onclick="document.getElementById('gridColorInput').click()" style="background-color: #ffffff;"></div>
+                        <input type="color" id="gridColorInput" value="#ffffff" oninput="updateGridColor(this.value)">
+                    </div>
+                    <div class="flex flex-col items-center px-2 border-r border-slate-100">
+                        <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Días (BG)</span>
+                        <div class="w-5 h-5 rounded-full border border-slate-300 cursor-pointer shadow-inner" id="headerBgColorPreview" onclick="document.getElementById('headerBgInput').click()" style="background-color: #1e293b;"></div>
+                        <input type="color" id="headerBgInput" value="#1e293b" oninput="updateHeaderStyles('bg', this.value)">
+                    </div>
+                    <div class="flex flex-col items-center px-2">
+                        <span class="text-[8px] font-bold text-slate-400 uppercase mb-1">Horas (BG)</span>
+                        <div class="w-5 h-5 rounded-full border border-slate-300 cursor-pointer shadow-inner" id="timeBgColorPreview" onclick="document.getElementById('timeBgInput').click()" style="background-color: #334155;"></div>
+                        <input type="color" id="timeBgInput" value="#334155" oninput="updateTimeStyles('bg', this.value)">
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button id="downloadBtn" onclick="downloadSchedule()" class="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-700 text-sm font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all shadow-sm">
+                        Exportar PNG
+                    </button>
+                    <button onclick="toggleModal(true)" class="flex items-center gap-2 px-5 py-2.5 bg-slate-800 text-white text-sm font-bold rounded-xl hover:bg-slate-900 transition-all shadow-lg shadow-slate-200">
+                        Añadir Materia
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+            <div class="xl:col-span-3 space-y-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2 uppercase tracking-widest">
+                        Inventario de Materias
+                    </h2>
+                    <div id="subjectsList" class="space-y-3 max-h-[600px] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+
+            <div class="xl:col-span-9">
+                <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto w-full">
+                        <div id="exportContainer" class="min-w-[1000px] bg-white p-6">
+                            <div id="scheduleGrid" class="grid-schedule shadow-inner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer de GitHub -->
+    <footer class="mt-12 py-8 border-t border-slate-200 flex flex-col items-center gap-4 text-slate-400">
+        <a href="https://github.com/tu-usuario/tu-repositorio" target="_blank" class="github-badge">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            GitHub Repository
+            <span class="version">v1.0</span>
+        </a>
+        <p class="text-[10px] font-medium uppercase tracking-widest">Desarrollado para la comunidad ucista de ingeniería</p>
+    </footer>
+
+    <!-- Modal para añadir materias -->
+    <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800">Importar Materias</h3>
+                <button onclick="toggleModal(false)" class="text-slate-400 hover:text-slate-600 text-xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <textarea id="modalInput" class="w-full h-48 p-4 text-xs font-mono border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none mb-4" placeholder="Ejemplo:
+MAT101 Cálculo I 01 PROF. Juan Perez
+LU0800 A101 MA0850 B202"></textarea>
+                <button onclick="addNewSubject()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold">Guardar en Inventario</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DAYS = ['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'];
+        const FULL_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        const HOURS = ['0800', '0850', '0940', '1030', '1120', '1210', '1300', '1350', '1440', '1530', '1620', '1710', '1800', '1850'];
+        
+        let inventory = {}; 
+        let gridBgColor = "#ffffff";
+        let headerBgColor = "#1e293b";
+        let headerTextColor = "#ffffff";
+        let timeBgColor = "#334155";
+        let timeTextColor = "#ffffff";
+
+        function stringToHslColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            const h = Math.abs(hash % 360);
+            return `hsl(${h}, 70%, 92%)`;
+        }
+
+        function toggleModal(show) {
+            document.getElementById('addModal').classList.toggle('hidden', !show);
+        }
+
+        function updateGridColor(val) {
+            gridBgColor = val;
+            document.getElementById('gridColorPreview').style.backgroundColor = val;
+            document.getElementById('scheduleGrid').style.backgroundColor = val;
+        }
+
+        function updateHeaderStyles(type, val) {
+            if (type === 'bg') headerBgColor = val;
+            else headerTextColor = val;
+            renderSchedule();
+        }
+
+        function updateTimeStyles(type, val) {
+            if (type === 'bg') timeBgColor = val;
+            else timeTextColor = val;
+            renderSchedule();
+        }
+
+        function updateSubjectColor(code, val) { inventory[code].color = val; renderSchedule(); }
+        function updateSubjectTextColor(code, val) { inventory[code].textColor = val; renderSchedule(); }
+
+        function parseInput(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return null;
+            const header = lines[0].trim().replace(/\s+/g, ' ');
+            const scheduleLine = lines[1].trim();
+            const match = header.match(/^(\S+)\s+(.*?)\s+(\d+)\s+(?:PROF\.?|PROFESOR)\s*(.*)$/i);
+
+            let code, name, section, professor;
+            if (match) {
+                [_, code, name, section, professor] = match;
+                section = section.padStart(2, '0');
+            } else {
+                const firstSpace = header.indexOf(' ');
+                code = firstSpace !== -1 ? header.substring(0, firstSpace) : header;
+                name = firstSpace !== -1 ? header.substring(firstSpace) : "Materia";
+                section = "00"; professor = "S/P";
+            }
+
+            const sessions = [];
+            const scheduleRegex = /([A-Z]{2})(\d{4})\s+([^\s]+)/g;
+            let mS;
+            while ((mS = scheduleRegex.exec(scheduleLine)) !== null) {
+                sessions.push({ day: mS[1], time: mS[2], room: mS[3] });
+            }
+            return sessions.length > 0 ? { code, name, info: `Secc ${section} - ${professor}`, sessions, section, professor } : null;
+        }
+
+        function addNewSubject() {
+            const input = document.getElementById('modalInput').value;
+            const blocks = input.trim().split(/\n\s*\n/);
+            blocks.forEach(block => {
+                const data = parseInput(block);
+                if (!data) return;
+                if (!inventory[data.code]) {
+                    inventory[data.code] = {
+                        name: data.name,
+                        sections: [],
+                        active: true,
+                        selectedSectionIndex: 0,
+                        color: stringToHslColor(data.code),
+                        textColor: '#1e293b'
+                    };
+                }
+                if (!inventory[data.code].sections.some(s => s.info === data.info)) {
+                    inventory[data.code].sections.push({ 
+                        info: data.info, 
+                        sessions: data.sessions,
+                        sectionNumber: data.section,
+                        professorName: data.professor
+                    });
+                }
+            });
+            toggleModal(false);
+            document.getElementById('modalInput').value = '';
+            updateUI();
+        }
+
+        async function downloadSchedule() {
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.innerText;
+            btn.innerText = 'Procesando...';
+            try {
+                const canvas = await html2canvas(document.getElementById('exportContainer'), { scale: 3, backgroundColor: gridBgColor });
+                const link = document.createElement('a');
+                link.download = 'mi_horario.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            } finally {
+                btn.innerText = originalText;
+            }
+        }
+
+        function updateUI() {
+            renderInventory();
+            renderSchedule();
+        }
+
+        function renderInventory() {
+            const container = document.getElementById('subjectsList');
+            const keys = Object.keys(inventory);
+            if (keys.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs italic">Vacío</div>`;
+                return;
+            }
+
+            container.innerHTML = keys.map(code => {
+                const sub = inventory[code];
+                return `
+                    <div class="p-4 border rounded-xl transition-all ${sub.active ? 'border-blue-100 bg-white shadow-sm' : 'opacity-50 bg-slate-50'}">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" ${sub.active ? 'checked' : ''} onchange="inventory['${code}'].active = !inventory['${code}'].active; updateUI()" class="w-4 h-4 rounded text-blue-600 cursor-pointer">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white bg-slate-800">${code}</span>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="document.getElementById('color-${code}').click()" class="action-btn"><div class="w-3 h-3 rounded-full border" style="background-color: ${sub.color}"></div></button>
+                                <input type="color" id="color-${code}" value="#ffffff" oninput="updateSubjectColor('${code}', this.value)" onchange="updateUI()">
+                                <button onclick="document.getElementById('text-color-${code}').click()" class="action-btn"><span class="font-black text-[10px]" style="color: ${sub.textColor}">A</span></button>
+                                <input type="color" id="text-color-${code}" value="${sub.textColor}" oninput="updateSubjectTextColor('${code}', this.value)" onchange="updateUI()">
+                                <button onclick="delete inventory['${code}']; updateUI()" class="action-btn btn-delete"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                            </div>
+                        </div>
+                        <div class="pl-7 mb-3">
+                            <div class="text-[11px] font-bold text-slate-700 leading-tight break-words uppercase">${sub.name}</div>
+                        </div>
+                        <div class="pl-7">
+                            <select onchange="inventory['${code}'].selectedSectionIndex = this.value; updateUI()" class="w-full text-[10px] p-2 rounded-lg border border-slate-200 bg-slate-50 truncate">
+                                ${sub.sections.map((sec, i) => `<option value="${i}" ${sub.selectedSectionIndex == i ? 'selected' : ''}>${sec.info}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderSchedule() {
+            const grid = document.getElementById('scheduleGrid');
+            grid.innerHTML = '';
+            grid.style.backgroundColor = gridBgColor;
+            
+            const corner = document.createElement('div'); 
+            corner.className = 'header-cell'; corner.innerText = 'HORA'; 
+            corner.style.backgroundColor = headerBgColor; corner.style.color = headerTextColor;
+            grid.appendChild(corner);
+
+            FULL_DAYS.forEach(d => { 
+                const h = document.createElement('div'); 
+                h.className = 'header-cell'; h.innerText = d; 
+                h.style.backgroundColor = headerBgColor; h.style.color = headerTextColor;
+                grid.appendChild(h); 
+            });
+
+            const cellMap = {};
+            HOURS.forEach(hour => {
+                const label = document.createElement('div'); 
+                label.className = 'cell time-cell border-r border-slate-100'; label.innerText = hour; 
+                label.style.backgroundColor = timeBgColor; label.style.color = timeTextColor;
+                grid.appendChild(label);
+
+                DAYS.forEach(day => {
+                    const cell = document.createElement('div'); cell.className = 'cell';
+                    const id = `${day}-${hour}`; cell.id = id; grid.appendChild(cell); cellMap[id] = cell;
+                });
+            });
+
+            Object.keys(inventory).forEach(code => {
+                const sub = inventory[code];
+                if (!sub.active) return;
+                const section = sub.sections[sub.selectedSectionIndex];
+                if (!section) return;
+
+                section.sessions.forEach(session => {
+                    const target = cellMap[`${session.day}-${session.time}`];
+                    if (target) {
+                        const card = document.createElement('div');
+                        card.className = 'course-badge';
+                        card.style.backgroundColor = sub.color;
+                        card.style.color = sub.textColor;
+                        card.innerHTML = `
+                            <div style="font-weight: 900; font-size: 7px; opacity: 0.7;">${code}</div>
+                            <div style="font-weight: 800; line-height: 1.1; font-size: 9px; margin: 2px 0; text-transform: uppercase;">${sub.name}</div>
+                            <div style="font-size: 7px; font-weight: 600;">Secc: ${section.sectionNumber}</div>
+                            <div style="font-size: 7px; font-weight: 500; text-transform: uppercase; margin-top: 1px;">${section.professorName}</div>
+                            <div style="margin-top: 5px; font-weight: 800; font-size: 8px; border-top: 1px solid currentColor; padding-top: 2px; width: 60%">${session.room}</div>
+                        `;
+                        if (target.children.length > 0) target.classList.add('conflict');
+                        target.appendChild(card);
+                    }
+                });
+            });
+        }
+
+        window.onload = updateUI;
+    </script>
+</body>
+</html>
