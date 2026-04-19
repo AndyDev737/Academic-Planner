@@ -15,6 +15,14 @@ Diseñado específicamente para la comunidad estudiantil (UC \- Facultad de Inge
 * **📸 Exportación a Imagen:** Generar un archivo **PNG de alta resolución** con un solo clic, listo para guardar o compartir por redes sociales.  
 * **🎥 Guía de Ayuda Integrada:** Tutoriales en video integrados (con reproducción automática, silenciados y sin menú de clic derecho) para dominar todas las funciones en segundos.
 
+## **🚀 Nuevas Funcionalidades: Horas Dinámicas**
+
+La actualización más reciente introduce la **Configuración de Bloques Horarios**, permitiendo que la herramienta se adapte a cualquier sistema de períodos:
+
+* **Personalización de Bloques:** Ya no estás limitado a horarios predefinidos. Puedes ingresar tus propios códigos de tiempo (ej. 0700, 0815, 0930, 1400\) para que la cuadrícula se genere automáticamente.  
+* **Adaptabilidad Institucional:** Ideal para universidades con bloques de 50 minutos, 90 minutos o incluso horarios nocturnos y sabatinos.  
+* **Interfaz Intuitiva:** Accede mediante el icono de reloj en la barra de navegación para actualizar la estructura del horario en tiempo real sin perder tus materias cargadas.
+
 ## **🛠️ Tecnologías Utilizadas**
 
 | Tecnología | Uso / Propósito |
